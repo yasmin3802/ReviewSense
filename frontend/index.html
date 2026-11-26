@@ -1,0 +1,405 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description" content="ReviewSense uses machine learning to analyze the sentiment of IMDb movie reviews.">
+
+    <title>ReviewSense | AI Sentiment Analyzer</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Main stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- ================= NAVIGATION ================= -->
+    <header class="navbar">
+
+        <a href="#home" class="brand">
+            <span class="brand-icon">R</span>
+            <span>Review<span class="brand-accent">Sense</span></span>
+        </a>
+
+        <nav class="nav-links">
+            <a href="#analyzer">Analyzer</a>
+            <a href="#about">About</a>
+        </nav>
+
+        <a href="#analyzer" class="nav-button">
+            Try it now <span>↗</span>
+        </a>
+
+    </header>
+
+
+    <main>
+
+        <!-- ================= HERO SECTION ================= -->
+        <section class="hero" id="home">
+
+            <div class="hero-badge">
+                <span class="status-dot"></span>
+                AI-POWERED SENTIMENT ANALYSIS
+            </div>
+
+            <h1>
+                Every review has a story.<br>
+                <span>Let's uncover its sentiment.</span>
+            </h1>
+
+            <p class="hero-description">
+                Discover the emotions behind movie reviews.
+                Simply enter your thoughts and let machine learning
+                uncover the sentiment behind them.
+            </p>
+
+            <!-- Model statistics -->
+            <div class="hero-stats">
+
+                <div class="stat">
+                    <strong>91.09%</strong>
+                    <span>Held-out test accuracy</span>
+                </div>
+
+                <div class="stat-divider"></div>
+
+                <div class="stat">
+                    <strong>50,000</strong>
+                    <span>TF-IDF features</span>
+                </div>
+
+                <div class="stat-divider"></div>
+
+                <div class="stat">
+                    <strong>Linear SVM</strong>
+                    <span>Selected ML model</span>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= ANALYZER SECTION ================= -->
+        <section class="analyzer-section" id="analyzer">
+
+            <div class="section-heading">
+
+                <span class="eyebrow">THE ANALYZER</span>
+
+                <h2>What's your review saying?</h2>
+
+                <p>
+                    Enter a movie review and let ReviewSense
+                    predict whether its sentiment is positive or negative.
+                </p>
+
+            </div>
+
+
+            <div class="analyzer-card">
+
+                <!-- Input heading -->
+                <div class="card-top">
+
+                    <div>
+                        <span class="card-label">YOUR MOVIE REVIEW</span>
+                        <p>Write or paste your review below</p>
+                    </div>
+
+                    <span class="input-icon">✦</span>
+
+                </div>
+
+
+                <!-- Review input -->
+                <textarea
+                    id="reviewInput"
+                    maxlength="5000"
+                    placeholder="I absolutely loved this movie! The storyline was incredible..."
+                    aria-label="Enter your movie review"
+                ></textarea>
+
+
+                <!-- Character counter and clear button -->
+                <div class="input-footer">
+
+                    <span id="charCount">0 / 5000 characters</span>
+
+                    <button
+                        id="clearBtn"
+                        class="clear-button"
+                        type="button"
+                    >
+                        Clear text
+                    </button>
+
+                </div>
+
+
+                <!-- Example reviews -->
+                <div class="sample-reviews">
+
+                    <span>Try an example:</span>
+
+                    <button
+                        class="sample-btn positive-sample"
+                        data-review="This movie was absolutely brilliant! The acting and storyline were incredible."
+                        type="button"
+                    >
+                        Positive
+                    </button>
+
+                    <button
+                        class="sample-btn negative-sample"
+                        data-review="This movie was boring, disappointing, and a complete waste of time."
+                        type="button"
+                    >
+                        Negative
+                    </button>
+
+                </div>
+
+
+                <!-- Analyze button -->
+                <button
+                    id="analyzeBtn"
+                    class="analyze-button"
+                    type="button"
+                >
+                    <span id="analyzeButtonText">Analyze Sentiment</span>
+                    <span class="button-arrow">↗</span>
+                </button>
+
+
+                <!-- Error message -->
+                <p
+                    id="errorMessage"
+                    class="error-message"
+                    role="alert"
+                    hidden
+                ></p>
+
+
+                <!-- Loading state -->
+                <div
+                    id="loadingState"
+                    class="loading-state"
+                    hidden
+                    aria-live="polite"
+                >
+                    <div class="loader"></div>
+                    <p>Analyzing your review...</p>
+                    <span>Our model is processing your text.</span>
+                </div>
+
+
+                <!-- Prediction result -->
+                <div
+                    id="resultCard"
+                    class="result-card"
+                    hidden
+                    aria-live="polite"
+                >
+
+                    <div class="result-top">
+
+                        <span class="card-label">ANALYSIS RESULT</span>
+
+                        <span class="result-tag">COMPLETED</span>
+
+                    </div>
+
+
+                    <div class="result-content">
+
+                        <div>
+                            <span class="result-caption">
+                                Predicted sentiment
+                            </span>
+
+                            <h3 id="sentimentResult">Positive</h3>
+
+                            <p id="resultDescription">
+                                Your review expresses positive sentiment.
+                            </p>
+                        </div>
+
+                        <div
+                            id="sentimentIcon"
+                            class="sentiment-icon"
+                            aria-hidden="true"
+                        >
+                            ✦
+                        </div>
+
+                    </div>
+
+
+                    <!-- Decision score -->
+                    <div class="score-section">
+
+                        <div class="score-heading">
+
+                            <span>Model decision score</span>
+
+                            <strong id="decisionScore">0.0000</strong>
+
+                        </div>
+
+                        <div
+                            class="score-track"
+                            role="presentation"
+                        >
+                            <div
+                                id="scoreBar"
+                                class="score-bar"
+                            ></div>
+                        </div>
+
+                        <p class="score-note">
+                            Positive scores indicate positive sentiment,
+                            while negative scores indicate negative sentiment.
+                            This value is a model decision score, not a probability.
+                        </p>
+
+                    </div>
+
+
+                    <button
+                        id="resetBtn"
+                        class="reset-button"
+                        type="button"
+                    >
+                        Analyze another review ↗
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <p class="privacy-note">
+                ✦ Predictions are generated using our trained machine learning model.
+            </p>
+
+        </section>
+
+
+        <!-- ================= ABOUT SECTION ================= -->
+        <section class="about-section" id="about">
+
+            <div class="about-heading">
+
+                <span class="eyebrow">BEHIND THE TECHNOLOGY</span>
+
+                <h2>Meet the intelligence behind ReviewSense.</h2>
+
+                <p>
+                    A machine learning application that turns movie reviews
+                    into meaningful sentiment predictions.
+                </p>
+
+            </div>
+
+
+            <div class="about-grid">
+
+                <article class="about-card">
+
+                    <div class="about-icon">✦</div>
+
+                    <h3>Our Dataset</h3>
+
+                    <p>
+                        Trained using the IMDb movie review dataset,
+                        containing 50,000 labeled reviews.
+                    </p>
+
+                </article>
+
+
+                <article class="about-card">
+
+                    <div class="about-icon">⌘</div>
+
+                    <h3>Text Processing</h3>
+
+                    <p>
+                        Reviews are cleaned and transformed into numerical
+                        features using TF-IDF with unigrams and bigrams.
+                    </p>
+
+                </article>
+
+
+                <article class="about-card">
+
+                    <div class="about-icon">◎</div>
+
+                    <h3>Machine Learning</h3>
+
+                    <p>
+                        A tuned Linear Support Vector Machine
+                        (Linear SVM) classifies reviews as positive or negative.
+                    </p>
+
+                </article>
+
+            </div>
+
+
+            <div class="model-note">
+
+                <span class="model-note-icon">ⓘ</span>
+
+                <div>
+                    <h3>Understanding the model's limitations</h3>
+
+                    <p>
+                        ReviewSense was trained on IMDb movie reviews.
+                        Its predictions may be less reliable for other types
+                        of text, sarcasm, mixed opinions, or language outside
+                        its training data. Its decision score is not a
+                        calibrated confidence percentage.
+                    </p>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- ================= FOOTER ================= -->
+    <footer class="footer">
+
+        <a href="#home" class="brand">
+            <span class="brand-icon">R</span>
+            <span>Review<span class="brand-accent">Sense</span></span>
+        </a>
+
+        <p>Turning movie opinions into meaningful insights.</p>
+
+        <span class="copyright">
+            © 2026 ReviewSense. Built with machine learning.
+        </span>
+
+    </footer>
+
+
+    <!-- JavaScript will be connected here -->
+    <script src="script.js"></script>
+
+</body>
+</html>
